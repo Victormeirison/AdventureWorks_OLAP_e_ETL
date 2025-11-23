@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 # --- CONFIGURACOES ---
 BASE_DIR = r'C:\Projeto_ETL'
 DB_USER = 'postgres'
-DB_PASS = '18032005'  # <--- SUA SENHA AQUI
+DB_PASS = '18032005' 
 DB_HOST = 'localhost'
 DB_NAME = 'postgres' 
 PORT = '5432'
@@ -50,7 +50,7 @@ def etl_dim_tempo():
                 'data_completa': dia.date(),
                 'ano': dia.year,
                 'mes': dia.month,
-                'nome_mes': mapa_meses[dia.month], # <--- AQUI ESTAVA FALTANDO
+                'nome_mes': mapa_meses[dia.month],
                 'trimestre': (dia.month - 1) // 3 + 1,
                 'dia_da_semana': mapa_dias[dia.weekday()],
                 'eh_fim_de_semana': dia.weekday() >= 5
@@ -104,7 +104,7 @@ def etl_dim_cliente():
 def preparacao_seguranca():
     try:
         with engine.connect() as con:
-            # --- MUDANCA AQUI: USAMOS ID -1 (NEGATIVO) PARA NAO COLIDIR COM O ID 1 REAL ---
+        
             con.execute(text("INSERT INTO public.dim_produto (sk_produto, id_produto_origem, nome_produto, cor) VALUES (-1, -1, 'Generico', 'N/A') ON CONFLICT (sk_produto) DO NOTHING;"))
             con.execute(text("INSERT INTO public.dim_cliente (sk_cliente, id_cliente_origem, nome_completo) VALUES (-1, -1, 'Generico') ON CONFLICT (sk_cliente) DO NOTHING;"))
             con.commit()
@@ -145,7 +145,7 @@ def etl_fato_vendas():
         df_merge_final['OrderDate'] = pd.to_datetime(df_merge_final['OrderDate'])
         df_fato['sk_tempo'] = df_merge_final['OrderDate'].dt.strftime('%Y%m%d').astype(int)
         
-        # --- MUDANCA AQUI: SE NAO ACHAR, USA -1 (O NOVO GENERICO) ---
+      
         df_fato['sk_produto'] = df_merge_final['sk_produto'].fillna(-1).astype(int)
         df_fato['sk_cliente'] = df_merge_final['sk_cliente'].fillna(-1).astype(int)
         df_fato['sk_territorio'] = 1
@@ -165,8 +165,9 @@ def etl_fato_vendas():
 if __name__ == "__main__":
     verificar_arquivos()
     etl_dim_tempo()
-    preparacao_seguranca() # Agora insere ID -1
+    preparacao_seguranca() 
     etl_dim_produto()
     etl_dim_cliente()
     etl_fato_vendas()
+
     print("\n--- FIM DO PROCESSO ---")
