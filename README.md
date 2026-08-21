@@ -38,4 +38,4 @@ Como executar
 5.  Execute o script: `python etl_pipeline.py`.
 
 ---
-**Autor:** [Victor] - Unisales 2025
+**Autor:** [Victor Meirison Garcia] - Unisales 2025
